@@ -40,8 +40,6 @@ describe("evm-verifier", function () {
     // console.log("ring: ", ring_);
     // console.log("responses: ", responses);
 
-    // expect(await SigVerifier.verifyRingSignature(message, ring_, responses, c)).to.equal(true);
-    console.log(await SigVerifier.verifyRingSignature(message, ring_, responses, c));
-
+    expect(await SigVerifier.verifyRingSignature(message, ring_, responses, c)).to.equal(true);
   });
 });

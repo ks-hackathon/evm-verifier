@@ -9,6 +9,7 @@ import "./utils/ec-solidity.sol";
 import "./utils/ECCMath.sol";
 
 // TODO: use https://github.com/nucypher/numerology/tree/master for point multiplication (d'apres reno moins de gas)
+// https://github.com/rdubois-crypto/FreshCryptoLib/blob/master/solidity/external/Numerology.sol
 contract RingSigVerifier {
     // Curve parameters
     uint256 constant aa = 0;

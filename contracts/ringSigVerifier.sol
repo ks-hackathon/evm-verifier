@@ -8,6 +8,7 @@ import "@openzeppelin/contracts/utils/Strings.sol";
 import "./utils/ec-solidity.sol";
 import "./utils/ECCMath.sol";
 
+// TODO: use https://github.com/nucypher/numerology/tree/master for point multiplication (d'apres reno moins de gas)
 contract RingSigVerifier {
     // Curve parameters
     uint256 constant aa = 0;
@@ -30,7 +31,7 @@ contract RingSigVerifier {
     constructor() {}
 
     function verifyRingSignature(
-        string memory message, // should be keccack256 hash of message
+        string memory message, // keccack256 hash
         uint256[] memory ring, // ring of public keys [pkX1, pkY1, pkX2, pkY2, ..., pkXn, pkYn]
         uint256[] memory responses,
         uint256 c
@@ -46,8 +47,6 @@ contract RingSigVerifier {
             responses.length == ring.length / 2,
             "Responses length must be equal to ring length / 2"
         );
-
-        // TODO: call api
 
         // compute strRing
         string memory strRing = formatRing(ring);

@@ -10,18 +10,6 @@ import "./ringSigVerifier.sol";
 contract AliceRingToken is ERC721, ERC721URIStorage, Ownable {
     uint256 private _nextTokenId;
 
-    struct pubKey {
-        uint256 x;
-        uint256 y;
-    }
-
-    struct Signature {
-        pubKey[] ring;
-        uint256 c;
-        string message;
-        uint256[] responses;
-    }
-
     enum Status {
         UNKNOWN, // the proof has not been verified on-chain, no proof has been minted
         MINTED // the proof has already been minted
@@ -120,12 +108,12 @@ contract AliceRingToken is ERC721, ERC721URIStorage, Ownable {
      *
      * @param token - the erc20 address of the token we are proving the ownership of
      * @param minBalance -  the minimum balance of this token required by an address
-     * @param signature - the signature object
+     * @param ring - the ring of public keys
      */
     function verifyTokenAmounts( // MOCKERD: RETURN TRUE
         address token,
         uint256 minBalance,
-        Signature memory signature
+        uint256[2] memory ring
     ) internal view returns (bool) {
         // // Check that all addresses in the ring own at least the minimal amount of tokens specified
         // IERC20 tokenContract = IERC20(token);
@@ -141,7 +129,7 @@ contract AliceRingToken is ERC721, ERC721URIStorage, Ownable {
         return true;
     }
 
-    /** // TODO: update doc accortding to new fct signature
+    /** 
      * @notice Mint an SBT
      *
      * The sbt is minted to msg.sender
@@ -153,11 +141,14 @@ contract AliceRingToken is ERC721, ERC721URIStorage, Ownable {
      * @param minBalance - the balance threshold
      * @param uri - the IPFS uri
      * @param proofId - the hash of all the responses used in the proof
+     * @param message - the hash of the message signed by the ring
+     * @param ring - the ring of public keys
+     * @param responses - the reponses of the ring
+     * @param c - the signature c value
      */
     function mint( // TODO: comment on verifie que le message est bien valide -> le former dans le contrat
         address token,
         uint256 minBalance,
-        // Signature memory signature,
         string memory uri,
         string memory proofId,
         // signature data:

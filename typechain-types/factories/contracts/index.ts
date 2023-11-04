@@ -2,4 +2,4 @@
 /* tslint:disable */
 /* eslint-disable */
 export * as ringSigVerifierSol from "./ringSigVerifier.sol";
-export * as secp256K1Sol from "./secp256k1.sol";
+export * as sbtSol from "./sbt.sol";

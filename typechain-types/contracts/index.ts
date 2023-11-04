@@ -3,5 +3,5 @@
 /* eslint-disable */
 import type * as ringSigVerifierSol from "./ringSigVerifier.sol";
 export type { ringSigVerifierSol };
-import type * as secp256K1Sol from "./secp256k1.sol";
-export type { secp256K1Sol };
+import type * as sbtSol from "./sbt.sol";
+export type { sbtSol };

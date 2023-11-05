@@ -30,6 +30,7 @@ export interface AliceRingTokenInterface extends Interface {
       | "balanceOf"
       | "burn"
       | "getApproved"
+      | "handleOracleFulfillment"
       | "isApprovedForAll"
       | "mint"
       | "mintStatus"
@@ -37,8 +38,13 @@ export interface AliceRingTokenInterface extends Interface {
       | "owner"
       | "ownerOf"
       | "renounceOwnership"
+      | "s_lastError"
+      | "s_lastRequestId"
+      | "s_lastResponse"
       | "safeTransferFrom(address,address,uint256)"
       | "safeTransferFrom(address,address,uint256,bytes)"
+      | "sendRequest"
+      | "sendRequestCBOR"
       | "setApprovalForAll"
       | "supportsInterface"
       | "symbol"
@@ -55,6 +61,9 @@ export interface AliceRingTokenInterface extends Interface {
       | "BatchMetadataUpdate"
       | "MetadataUpdate"
       | "OwnershipTransferred"
+      | "RequestFulfilled"
+      | "RequestSent"
+      | "Response"
       | "Transfer"
   ): EventFragment;
 
@@ -70,6 +79,10 @@ export interface AliceRingTokenInterface extends Interface {
   encodeFunctionData(
     functionFragment: "getApproved",
     values: [BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "handleOracleFulfillment",
+    values: [BytesLike, BytesLike, BytesLike]
   ): string;
   encodeFunctionData(
     functionFragment: "isApprovedForAll",
@@ -100,12 +113,42 @@ export interface AliceRingTokenInterface extends Interface {
     values?: undefined
   ): string;
   encodeFunctionData(
+    functionFragment: "s_lastError",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "s_lastRequestId",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "s_lastResponse",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
     functionFragment: "safeTransferFrom(address,address,uint256)",
     values: [AddressLike, AddressLike, BigNumberish]
   ): string;
   encodeFunctionData(
     functionFragment: "safeTransferFrom(address,address,uint256,bytes)",
     values: [AddressLike, AddressLike, BigNumberish, BytesLike]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "sendRequest",
+    values: [
+      string,
+      BytesLike,
+      BigNumberish,
+      BigNumberish,
+      string[],
+      BytesLike[],
+      BigNumberish,
+      BigNumberish,
+      BytesLike
+    ]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "sendRequestCBOR",
+    values: [BytesLike, BigNumberish, BigNumberish, BytesLike]
   ): string;
   encodeFunctionData(
     functionFragment: "setApprovalForAll",
@@ -138,6 +181,10 @@ export interface AliceRingTokenInterface extends Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
+    functionFragment: "handleOracleFulfillment",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
     functionFragment: "isApprovedForAll",
     data: BytesLike
   ): Result;
@@ -151,11 +198,31 @@ export interface AliceRingTokenInterface extends Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
+    functionFragment: "s_lastError",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "s_lastRequestId",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "s_lastResponse",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
     functionFragment: "safeTransferFrom(address,address,uint256)",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
     functionFragment: "safeTransferFrom(address,address,uint256,bytes)",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "sendRequest",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "sendRequestCBOR",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -260,6 +327,48 @@ export namespace OwnershipTransferredEvent {
   export type LogDescription = TypedLogDescription<Event>;
 }
 
+export namespace RequestFulfilledEvent {
+  export type InputTuple = [id: BytesLike];
+  export type OutputTuple = [id: string];
+  export interface OutputObject {
+    id: string;
+  }
+  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
+  export type Filter = TypedDeferredTopicFilter<Event>;
+  export type Log = TypedEventLog<Event>;
+  export type LogDescription = TypedLogDescription<Event>;
+}
+
+export namespace RequestSentEvent {
+  export type InputTuple = [id: BytesLike];
+  export type OutputTuple = [id: string];
+  export interface OutputObject {
+    id: string;
+  }
+  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
+  export type Filter = TypedDeferredTopicFilter<Event>;
+  export type Log = TypedEventLog<Event>;
+  export type LogDescription = TypedLogDescription<Event>;
+}
+
+export namespace ResponseEvent {
+  export type InputTuple = [
+    requestId: BytesLike,
+    response: BytesLike,
+    err: BytesLike
+  ];
+  export type OutputTuple = [requestId: string, response: string, err: string];
+  export interface OutputObject {
+    requestId: string;
+    response: string;
+    err: string;
+  }
+  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
+  export type Filter = TypedDeferredTopicFilter<Event>;
+  export type Log = TypedEventLog<Event>;
+  export type LogDescription = TypedLogDescription<Event>;
+}
+
 export namespace TransferEvent {
   export type InputTuple = [
     from: AddressLike,
@@ -333,6 +442,12 @@ export interface AliceRingToken extends BaseContract {
 
   getApproved: TypedContractMethod<[tokenId: BigNumberish], [string], "view">;
 
+  handleOracleFulfillment: TypedContractMethod<
+    [requestId: BytesLike, response: BytesLike, err: BytesLike],
+    [void],
+    "nonpayable"
+  >;
+
   isApprovedForAll: TypedContractMethod<
     [owner: AddressLike, operator: AddressLike],
     [boolean],
@@ -364,6 +479,12 @@ export interface AliceRingToken extends BaseContract {
 
   renounceOwnership: TypedContractMethod<[], [void], "nonpayable">;
 
+  s_lastError: TypedContractMethod<[], [string], "view">;
+
+  s_lastRequestId: TypedContractMethod<[], [string], "view">;
+
+  s_lastResponse: TypedContractMethod<[], [string], "view">;
+
   "safeTransferFrom(address,address,uint256)": TypedContractMethod<
     [from: AddressLike, to: AddressLike, tokenId: BigNumberish],
     [void],
@@ -378,6 +499,33 @@ export interface AliceRingToken extends BaseContract {
       data: BytesLike
     ],
     [void],
+    "nonpayable"
+  >;
+
+  sendRequest: TypedContractMethod<
+    [
+      source: string,
+      encryptedSecretsUrls: BytesLike,
+      donHostedSecretsSlotID: BigNumberish,
+      donHostedSecretsVersion: BigNumberish,
+      args: string[],
+      bytesArgs: BytesLike[],
+      subscriptionId: BigNumberish,
+      gasLimit: BigNumberish,
+      donID: BytesLike
+    ],
+    [string],
+    "nonpayable"
+  >;
+
+  sendRequestCBOR: TypedContractMethod<
+    [
+      request: BytesLike,
+      subscriptionId: BigNumberish,
+      gasLimit: BigNumberish,
+      donID: BytesLike
+    ],
+    [string],
     "nonpayable"
   >;
 
@@ -432,6 +580,13 @@ export interface AliceRingToken extends BaseContract {
     nameOrSignature: "getApproved"
   ): TypedContractMethod<[tokenId: BigNumberish], [string], "view">;
   getFunction(
+    nameOrSignature: "handleOracleFulfillment"
+  ): TypedContractMethod<
+    [requestId: BytesLike, response: BytesLike, err: BytesLike],
+    [void],
+    "nonpayable"
+  >;
+  getFunction(
     nameOrSignature: "isApprovedForAll"
   ): TypedContractMethod<
     [owner: AddressLike, operator: AddressLike],
@@ -470,6 +625,15 @@ export interface AliceRingToken extends BaseContract {
     nameOrSignature: "renounceOwnership"
   ): TypedContractMethod<[], [void], "nonpayable">;
   getFunction(
+    nameOrSignature: "s_lastError"
+  ): TypedContractMethod<[], [string], "view">;
+  getFunction(
+    nameOrSignature: "s_lastRequestId"
+  ): TypedContractMethod<[], [string], "view">;
+  getFunction(
+    nameOrSignature: "s_lastResponse"
+  ): TypedContractMethod<[], [string], "view">;
+  getFunction(
     nameOrSignature: "safeTransferFrom(address,address,uint256)"
   ): TypedContractMethod<
     [from: AddressLike, to: AddressLike, tokenId: BigNumberish],
@@ -486,6 +650,35 @@ export interface AliceRingToken extends BaseContract {
       data: BytesLike
     ],
     [void],
+    "nonpayable"
+  >;
+  getFunction(
+    nameOrSignature: "sendRequest"
+  ): TypedContractMethod<
+    [
+      source: string,
+      encryptedSecretsUrls: BytesLike,
+      donHostedSecretsSlotID: BigNumberish,
+      donHostedSecretsVersion: BigNumberish,
+      args: string[],
+      bytesArgs: BytesLike[],
+      subscriptionId: BigNumberish,
+      gasLimit: BigNumberish,
+      donID: BytesLike
+    ],
+    [string],
+    "nonpayable"
+  >;
+  getFunction(
+    nameOrSignature: "sendRequestCBOR"
+  ): TypedContractMethod<
+    [
+      request: BytesLike,
+      subscriptionId: BigNumberish,
+      gasLimit: BigNumberish,
+      donID: BytesLike
+    ],
+    [string],
     "nonpayable"
   >;
   getFunction(
@@ -554,6 +747,27 @@ export interface AliceRingToken extends BaseContract {
     OwnershipTransferredEvent.OutputObject
   >;
   getEvent(
+    key: "RequestFulfilled"
+  ): TypedContractEvent<
+    RequestFulfilledEvent.InputTuple,
+    RequestFulfilledEvent.OutputTuple,
+    RequestFulfilledEvent.OutputObject
+  >;
+  getEvent(
+    key: "RequestSent"
+  ): TypedContractEvent<
+    RequestSentEvent.InputTuple,
+    RequestSentEvent.OutputTuple,
+    RequestSentEvent.OutputObject
+  >;
+  getEvent(
+    key: "Response"
+  ): TypedContractEvent<
+    ResponseEvent.InputTuple,
+    ResponseEvent.OutputTuple,
+    ResponseEvent.OutputObject
+  >;
+  getEvent(
     key: "Transfer"
   ): TypedContractEvent<
     TransferEvent.InputTuple,
@@ -615,6 +829,39 @@ export interface AliceRingToken extends BaseContract {
       OwnershipTransferredEvent.InputTuple,
       OwnershipTransferredEvent.OutputTuple,
       OwnershipTransferredEvent.OutputObject
+    >;
+
+    "RequestFulfilled(bytes32)": TypedContractEvent<
+      RequestFulfilledEvent.InputTuple,
+      RequestFulfilledEvent.OutputTuple,
+      RequestFulfilledEvent.OutputObject
+    >;
+    RequestFulfilled: TypedContractEvent<
+      RequestFulfilledEvent.InputTuple,
+      RequestFulfilledEvent.OutputTuple,
+      RequestFulfilledEvent.OutputObject
+    >;
+
+    "RequestSent(bytes32)": TypedContractEvent<
+      RequestSentEvent.InputTuple,
+      RequestSentEvent.OutputTuple,
+      RequestSentEvent.OutputObject
+    >;
+    RequestSent: TypedContractEvent<
+      RequestSentEvent.InputTuple,
+      RequestSentEvent.OutputTuple,
+      RequestSentEvent.OutputObject
+    >;
+
+    "Response(bytes32,bytes,bytes)": TypedContractEvent<
+      ResponseEvent.InputTuple,
+      ResponseEvent.OutputTuple,
+      ResponseEvent.OutputObject
+    >;
+    Response: TypedContractEvent<
+      ResponseEvent.InputTuple,
+      ResponseEvent.OutputTuple,
+      ResponseEvent.OutputObject
     >;
 
     "Transfer(address,address,uint256)": TypedContractEvent<

@@ -5,10 +5,20 @@ import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import {FunctionsClient} from "@chainlink/contracts/src/v0.8/functions/dev/v1_0_0/FunctionsClient.sol";
+import {FunctionsRequest} from "@chainlink/contracts/src/v0.8/functions/dev/v1_0_0/libraries/FunctionsRequest.sol";
 import "./ringSigVerifier.sol";
 
-contract AliceRingToken is ERC721, ERC721URIStorage, Ownable {
+contract AliceRingToken is ERC721, ERC721URIStorage, Ownable,FunctionsClient {
     uint256 private _nextTokenId;
+     using FunctionsRequest for FunctionsRequest.Request;
+    /*uint256 equalTrue=; 
+    uint256 equalFalse=;*/
+    bytes32 public s_lastRequestId;
+    bytes public s_lastResponse;
+    bytes public s_lastError;
+
+    event Response(bytes32 indexed requestId, bytes response, bytes err);
 
     enum Status {
         UNKNOWN, // the proof has not been verified on-chain, no proof has been minted
@@ -19,13 +29,15 @@ contract AliceRingToken is ERC721, ERC721URIStorage, Ownable {
     error InvalidSignature();
     error InvalidTokenAmounts();
     error OnlyOwnerCanBurn(uint256 tokenId);
+    error UnexpectedRequestID(bytes32 requestId);
 
     RingSigVerifier public verifier; // Instance of the ring signature verifier contract
     mapping(string => Status) public mintStatus; // signatureHash => Status (computed off-chain)
 
     constructor(
-        address _verifier
-    ) ERC721("AliceRingToken", "ART") Ownable(msg.sender) {
+        address _verifier,
+        address router 
+    ) ERC721("AliceRingToken", "ART") Ownable(msg.sender) FunctionsClient(router)  {
         verifier = RingSigVerifier(_verifier);
     }
 
@@ -187,6 +199,75 @@ contract AliceRingToken is ERC721, ERC721URIStorage, Ownable {
             revert OnlyOwnerCanBurn(tokenId);
         }
         _burn(tokenId);
+    }
+
+    /**
+     * @notice Send a simple request
+     * @param source JavaScript source code
+     * @param encryptedSecretsUrls Encrypted URLs where to fetch user secrets
+     * @param donHostedSecretsSlotID Don hosted secrets slotId
+     * @param donHostedSecretsVersion Don hosted secrets version
+     * @param args List of arguments accessible from within the source code
+     * @param bytesArgs Array of bytes arguments, represented as hex strings
+     * @param subscriptionId Billing ID
+     */
+    function sendRequest(
+        string calldata source,
+        FunctionsRequest.Location secretsLocation,
+        bytes calldata encryptedSecretsReference,
+        string[] calldata args,
+        bytes[] calldata bytesArgs,
+        uint64 subscriptionId,
+        uint32 callbackGasLimit, 
+        bytes32 donID,
+        string memory message, // should be keccack256 hash of message
+        uint256[] memory ring, // ring of public keys [pkX1, pkY1, pkX2, pkY2, ..., pkXn, pkYn]
+        uint256[] memory responses,
+        uint256 c
+    ) external returns (bytes32 requestId) {
+
+        if (!verifier.verifyRingSignature(message, ring, responses, c)) {
+            revert InvalidSignature();
+        }
+        FunctionsRequest.Request memory req;
+        req.initializeRequestForInlineJavaScript(source);
+        if (encryptedSecretsUrls.length > 0)
+            req.addSecretsReference(encryptedSecretsUrls);
+        else if (donHostedSecretsVersion > 0) {
+            req.addDONHostedSecrets(
+                donHostedSecretsSlotID,
+                donHostedSecretsVersion
+            );
+        }
+        if (args.length > 0) req.setArgs(args);
+        if (bytesArgs.length > 0) req.setBytesArgs(bytesArgs);
+        s_lastRequestId = _sendRequest(
+            req.encodeCBOR(),
+            subscriptionId,
+            gasLimit,
+            donID
+        );
+        return s_lastRequestId;
+    }
+
+    /**
+     * @notice Store latest result/error
+     * @param requestId The request ID, returned by sendRequest()
+     * @param response Aggregated response from the user code
+     * @param err Aggregated error from the user code or from the execution pipeline
+     * Either response or error parameter will be set, but never both
+     */
+    function fulfillRequest(
+        bytes32 requestId,
+        bytes memory response,
+        bytes memory err
+    ) internal override {
+        if (s_lastRequestId != requestId) {
+            revert UnexpectedRequestID(requestId);
+        }
+        s_lastResponse = response;
+        s_lastError = err;
+        emit Response(requestId, s_lastResponse, s_lastError);
     }
 
     // Override the _burn function from ERC721

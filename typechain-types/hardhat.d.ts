@@ -14,6 +14,38 @@ import * as Contracts from ".";
 declare module "hardhat/types/runtime" {
   interface HardhatEthersHelpers extends HardhatEthersHelpersBase {
     getContractFactory(
+      name: "FunctionsClient",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.FunctionsClient__factory>;
+    getContractFactory(
+      name: "IFunctionsClient",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.IFunctionsClient__factory>;
+    getContractFactory(
+      name: "IFunctionsRouter",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.IFunctionsRouter__factory>;
+    getContractFactory(
+      name: "IFunctionsSubscriptions",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.IFunctionsSubscriptions__factory>;
+    getContractFactory(
+      name: "FunctionsRequest",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.FunctionsRequest__factory>;
+    getContractFactory(
+      name: "ConfirmedOwner",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.ConfirmedOwner__factory>;
+    getContractFactory(
+      name: "ConfirmedOwnerWithProposal",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.ConfirmedOwnerWithProposal__factory>;
+    getContractFactory(
+      name: "IOwnable",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.IOwnable__factory>;
+    getContractFactory(
       name: "Ownable",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.Ownable__factory>;
@@ -74,6 +106,10 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.Strings__factory>;
     getContractFactory(
+      name: "FunctionsConsumerExample",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.FunctionsConsumerExample__factory>;
+    getContractFactory(
       name: "RingSigVerifier",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.RingSigVerifier__factory>;
@@ -83,6 +119,46 @@ declare module "hardhat/types/runtime" {
     ): Promise<Contracts.AliceRingToken__factory>;
 
     getContractAt(
+      name: "FunctionsClient",
+      address: string | ethers.Addressable,
+      signer?: ethers.Signer
+    ): Promise<Contracts.FunctionsClient>;
+    getContractAt(
+      name: "IFunctionsClient",
+      address: string | ethers.Addressable,
+      signer?: ethers.Signer
+    ): Promise<Contracts.IFunctionsClient>;
+    getContractAt(
+      name: "IFunctionsRouter",
+      address: string | ethers.Addressable,
+      signer?: ethers.Signer
+    ): Promise<Contracts.IFunctionsRouter>;
+    getContractAt(
+      name: "IFunctionsSubscriptions",
+      address: string | ethers.Addressable,
+      signer?: ethers.Signer
+    ): Promise<Contracts.IFunctionsSubscriptions>;
+    getContractAt(
+      name: "FunctionsRequest",
+      address: string | ethers.Addressable,
+      signer?: ethers.Signer
+    ): Promise<Contracts.FunctionsRequest>;
+    getContractAt(
+      name: "ConfirmedOwner",
+      address: string | ethers.Addressable,
+      signer?: ethers.Signer
+    ): Promise<Contracts.ConfirmedOwner>;
+    getContractAt(
+      name: "ConfirmedOwnerWithProposal",
+      address: string | ethers.Addressable,
+      signer?: ethers.Signer
+    ): Promise<Contracts.ConfirmedOwnerWithProposal>;
+    getContractAt(
+      name: "IOwnable",
+      address: string | ethers.Addressable,
+      signer?: ethers.Signer
+    ): Promise<Contracts.IOwnable>;
+    getContractAt(
       name: "Ownable",
       address: string | ethers.Addressable,
       signer?: ethers.Signer
@@ -157,6 +233,11 @@ declare module "hardhat/types/runtime" {
       address: string | ethers.Addressable,
       signer?: ethers.Signer
     ): Promise<Contracts.Strings>;
+    getContractAt(
+      name: "FunctionsConsumerExample",
+      address: string | ethers.Addressable,
+      signer?: ethers.Signer
+    ): Promise<Contracts.FunctionsConsumerExample>;
     getContractAt(
       name: "RingSigVerifier",
       address: string | ethers.Addressable,
@@ -169,6 +250,38 @@ declare module "hardhat/types/runtime" {
     ): Promise<Contracts.AliceRingToken>;
 
     deployContract(
+      name: "FunctionsClient",
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.FunctionsClient>;
+    deployContract(
+      name: "IFunctionsClient",
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.IFunctionsClient>;
+    deployContract(
+      name: "IFunctionsRouter",
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.IFunctionsRouter>;
+    deployContract(
+      name: "IFunctionsSubscriptions",
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.IFunctionsSubscriptions>;
+    deployContract(
+      name: "FunctionsRequest",
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.FunctionsRequest>;
+    deployContract(
+      name: "ConfirmedOwner",
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.ConfirmedOwner>;
+    deployContract(
+      name: "ConfirmedOwnerWithProposal",
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.ConfirmedOwnerWithProposal>;
+    deployContract(
+      name: "IOwnable",
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.IOwnable>;
+    deployContract(
       name: "Ownable",
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.Ownable>;
@@ -228,6 +341,10 @@ declare module "hardhat/types/runtime" {
       name: "Strings",
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.Strings>;
+    deployContract(
+      name: "FunctionsConsumerExample",
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.FunctionsConsumerExample>;
     deployContract(
       name: "RingSigVerifier",
       signerOrOptions?: ethers.Signer | DeployContractOptions
@@ -238,6 +355,46 @@ declare module "hardhat/types/runtime" {
     ): Promise<Contracts.AliceRingToken>;
 
     deployContract(
+      name: "FunctionsClient",
+      args: any[],
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.FunctionsClient>;
+    deployContract(
+      name: "IFunctionsClient",
+      args: any[],
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.IFunctionsClient>;
+    deployContract(
+      name: "IFunctionsRouter",
+      args: any[],
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.IFunctionsRouter>;
+    deployContract(
+      name: "IFunctionsSubscriptions",
+      args: any[],
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.IFunctionsSubscriptions>;
+    deployContract(
+      name: "FunctionsRequest",
+      args: any[],
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.FunctionsRequest>;
+    deployContract(
+      name: "ConfirmedOwner",
+      args: any[],
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.ConfirmedOwner>;
+    deployContract(
+      name: "ConfirmedOwnerWithProposal",
+      args: any[],
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.ConfirmedOwnerWithProposal>;
+    deployContract(
+      name: "IOwnable",
+      args: any[],
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.IOwnable>;
+    deployContract(
       name: "Ownable",
       args: any[],
       signerOrOptions?: ethers.Signer | DeployContractOptions
@@ -312,6 +469,11 @@ declare module "hardhat/types/runtime" {
       args: any[],
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.Strings>;
+    deployContract(
+      name: "FunctionsConsumerExample",
+      args: any[],
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.FunctionsConsumerExample>;
     deployContract(
       name: "RingSigVerifier",
       args: any[],

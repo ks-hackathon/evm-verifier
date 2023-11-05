@@ -139,9 +139,7 @@ export interface AliceRingTokenInterface extends Interface {
       BytesLike,
       string[],
       BytesLike[],
-      BigNumberish,
-      BigNumberish,
-      BytesLike
+      BigNumberish
     ]
   ): string;
   encodeFunctionData(
@@ -499,11 +497,9 @@ export interface AliceRingToken extends BaseContract {
       encryptedSecretsReference: BytesLike,
       args: string[],
       bytesArgs: BytesLike[],
-      subscriptionId: BigNumberish,
-      callbackGasLimit: BigNumberish,
-      donId: BytesLike
+      subscriptionId: BigNumberish
     ],
-    [void],
+    [string],
     "nonpayable"
   >;
 
@@ -639,11 +635,9 @@ export interface AliceRingToken extends BaseContract {
       encryptedSecretsReference: BytesLike,
       args: string[],
       bytesArgs: BytesLike[],
-      subscriptionId: BigNumberish,
-      callbackGasLimit: BigNumberish,
-      donId: BytesLike
+      subscriptionId: BigNumberish
     ],
-    [void],
+    [string],
     "nonpayable"
   >;
   getFunction(

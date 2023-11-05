@@ -106,10 +106,6 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.Strings__factory>;
     getContractFactory(
-      name: "FunctionsConsumerExample",
-      signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.FunctionsConsumerExample__factory>;
-    getContractFactory(
       name: "RingSigVerifier",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.RingSigVerifier__factory>;
@@ -234,11 +230,6 @@ declare module "hardhat/types/runtime" {
       signer?: ethers.Signer
     ): Promise<Contracts.Strings>;
     getContractAt(
-      name: "FunctionsConsumerExample",
-      address: string | ethers.Addressable,
-      signer?: ethers.Signer
-    ): Promise<Contracts.FunctionsConsumerExample>;
-    getContractAt(
       name: "RingSigVerifier",
       address: string | ethers.Addressable,
       signer?: ethers.Signer
@@ -341,10 +332,6 @@ declare module "hardhat/types/runtime" {
       name: "Strings",
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.Strings>;
-    deployContract(
-      name: "FunctionsConsumerExample",
-      signerOrOptions?: ethers.Signer | DeployContractOptions
-    ): Promise<Contracts.FunctionsConsumerExample>;
     deployContract(
       name: "RingSigVerifier",
       signerOrOptions?: ethers.Signer | DeployContractOptions
@@ -469,11 +456,6 @@ declare module "hardhat/types/runtime" {
       args: any[],
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.Strings>;
-    deployContract(
-      name: "FunctionsConsumerExample",
-      args: any[],
-      signerOrOptions?: ethers.Signer | DeployContractOptions
-    ): Promise<Contracts.FunctionsConsumerExample>;
     deployContract(
       name: "RingSigVerifier",
       args: any[],

@@ -54,8 +54,6 @@ export type { Math } from "./@openzeppelin/contracts/utils/math/Math";
 export { Math__factory } from "./factories/@openzeppelin/contracts/utils/math/Math__factory";
 export type { Strings } from "./@openzeppelin/contracts/utils/Strings";
 export { Strings__factory } from "./factories/@openzeppelin/contracts/utils/Strings__factory";
-export type { FunctionsConsumerExample } from "./contracts/consumer.sol/FunctionsConsumerExample";
-export { FunctionsConsumerExample__factory } from "./factories/contracts/consumer.sol/FunctionsConsumerExample__factory";
 export type { RingSigVerifier } from "./contracts/ringSigVerifier.sol/RingSigVerifier";
 export { RingSigVerifier__factory } from "./factories/contracts/ringSigVerifier.sol/RingSigVerifier__factory";
 export type { AliceRingToken } from "./contracts/sbt.sol/AliceRingToken";

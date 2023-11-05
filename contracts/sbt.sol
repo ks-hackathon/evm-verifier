@@ -18,6 +18,9 @@ contract AliceRingToken is ERC721, ERC721URIStorage, Ownable,FunctionsClient {
     bytes public s_lastResponse;
     bytes public s_lastError;
 
+    uint32 gaslimit = 50000;
+    bytes32 donId =0x66756e2d657468657265756d2d7365706f6c69612d3100000000000000000000;
+
     event Response(bytes32 indexed requestId, bytes response, bytes err);
 
     enum Status {
@@ -183,10 +186,8 @@ contract AliceRingToken is ERC721, ERC721URIStorage, Ownable,FunctionsClient {
     bytes calldata encryptedSecretsReference,
     string[] calldata args,
     bytes[] calldata bytesArgs,
-    uint64 subscriptionId,
-    uint32 callbackGasLimit,
-    bytes32 donId
-  ) external onlyOwner {
+    uint64 subscriptionId
+  ) external returns (bytes32){
     FunctionsRequest.Request memory req;
     req.initializeRequest(FunctionsRequest.Location.Inline, FunctionsRequest.CodeLanguage.JavaScript, source);
     req.secretsLocation = secretsLocation;
@@ -197,7 +198,8 @@ contract AliceRingToken is ERC721, ERC721URIStorage, Ownable,FunctionsClient {
     if (bytesArgs.length > 0) {
       req.setBytesArgs(bytesArgs);
     }
-    s_lastRequestId = _sendRequest(req.encodeCBOR(), subscriptionId, callbackGasLimit, donId);
+    s_lastRequestId = _sendRequest(req.encodeCBOR(), subscriptionId, gaslimit, donId);
+    return s_lastRequestId;
   }
 
     /**

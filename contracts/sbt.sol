@@ -115,39 +115,14 @@ contract AliceRingToken is ERC721, ERC721URIStorage, Ownable,FunctionsClient {
         return false;
     }
 
-    /**
-     * @notice Verifies the token amounts for each address in the ring
-     *
-     * @param token - the erc20 address of the token we are proving the ownership of
-     * @param minBalance -  the minimum balance of this token required by an address
-     * @param ring - the ring of public keys
-     */
-    function verifyTokenAmounts( // MOCKERD: RETURN TRUE
-        address token,
-        uint256 minBalance,
-        uint256[2] memory ring
-    ) internal view returns (bool) {
-        // // Check that all addresses in the ring own at least the minimal amount of tokens specified
-        // IERC20 tokenContract = IERC20(token);
-        // for (uint256 i = 0; i < signature.ring.length; i++) {
-        //     pubKey memory key = signature.ring[i];
-        //     address ringMember = address(
-        //         uint160(uint256(keccak256(abi.encodePacked(key.x, key.y))))
-        //     );
-        //     if (tokenContract.balanceOf(ringMember) < minBalance) {
-        //         return false;
-        //     }
-        // }
-        return true;
-    }
 
     /** 
      * @notice Mint an SBT
      *
      * The sbt is minted to msg.sender
      * If the verification of the signature is okay see (https://github.com/Cypher-Laboratory/EVM-Verifier/issues/3) and :
-     * - If `mintStatus[proofId] == UNKNOWN`, the proof is minted and the status is set to `MINTED`
-     * - If `mintStatus[proofId] == MINTED`, the proof has already been minted. Tx will revert
+     * - If mintStatus[proofId] == UNKNOWN, the proof is minted and the status is set to MINTED
+     * - If mintStatus[proofId] == MINTED, the proof has already been minted. Tx will revert
      *
      * @param token - the erc20 address of the token we are proving the ownership of
      * @param minBalance - the balance threshold
@@ -201,54 +176,29 @@ contract AliceRingToken is ERC721, ERC721URIStorage, Ownable,FunctionsClient {
         _burn(tokenId);
     }
 
-    /**
-     * @notice Send a simple request
-     * @param source JavaScript source code
-     * @param encryptedSecretsUrls Encrypted URLs where to fetch user secrets
-     * @param donHostedSecretsSlotID Don hosted secrets slotId
-     * @param donHostedSecretsVersion Don hosted secrets version
-     * @param args List of arguments accessible from within the source code
-     * @param bytesArgs Array of bytes arguments, represented as hex strings
-     * @param subscriptionId Billing ID
-     */
+    
     function sendRequest(
-        string calldata source,
-        FunctionsRequest.Location secretsLocation,
-        bytes calldata encryptedSecretsReference,
-        string[] calldata args,
-        bytes[] calldata bytesArgs,
-        uint64 subscriptionId,
-        uint32 callbackGasLimit, 
-        bytes32 donID,
-        string memory message, // should be keccack256 hash of message
-        uint256[] memory ring, // ring of public keys [pkX1, pkY1, pkX2, pkY2, ..., pkXn, pkYn]
-        uint256[] memory responses,
-        uint256 c
-    ) external returns (bytes32 requestId) {
-
-        if (!verifier.verifyRingSignature(message, ring, responses, c)) {
-            revert InvalidSignature();
-        }
-        FunctionsRequest.Request memory req;
-        req.initializeRequestForInlineJavaScript(source);
-        if (encryptedSecretsUrls.length > 0)
-            req.addSecretsReference(encryptedSecretsUrls);
-        else if (donHostedSecretsVersion > 0) {
-            req.addDONHostedSecrets(
-                donHostedSecretsSlotID,
-                donHostedSecretsVersion
-            );
-        }
-        if (args.length > 0) req.setArgs(args);
-        if (bytesArgs.length > 0) req.setBytesArgs(bytesArgs);
-        s_lastRequestId = _sendRequest(
-            req.encodeCBOR(),
-            subscriptionId,
-            gasLimit,
-            donID
-        );
-        return s_lastRequestId;
+    string calldata source,
+    FunctionsRequest.Location secretsLocation,
+    bytes calldata encryptedSecretsReference,
+    string[] calldata args,
+    bytes[] calldata bytesArgs,
+    uint64 subscriptionId,
+    uint32 callbackGasLimit,
+    bytes32 donId
+  ) external onlyOwner {
+    FunctionsRequest.Request memory req;
+    req.initializeRequest(FunctionsRequest.Location.Inline, FunctionsRequest.CodeLanguage.JavaScript, source);
+    req.secretsLocation = secretsLocation;
+    req.encryptedSecretsReference = encryptedSecretsReference;
+    if (args.length > 0) {
+      req.setArgs(args);
     }
+    if (bytesArgs.length > 0) {
+      req.setBytesArgs(bytesArgs);
+    }
+    s_lastRequestId = _sendRequest(req.encodeCBOR(), subscriptionId, callbackGasLimit, donId);
+  }
 
     /**
      * @notice Store latest result/error

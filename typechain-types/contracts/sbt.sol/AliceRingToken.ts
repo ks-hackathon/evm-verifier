@@ -44,7 +44,6 @@ export interface AliceRingTokenInterface extends Interface {
       | "safeTransferFrom(address,address,uint256)"
       | "safeTransferFrom(address,address,uint256,bytes)"
       | "sendRequest"
-      | "sendRequestCBOR"
       | "setApprovalForAll"
       | "supportsInterface"
       | "symbol"
@@ -136,19 +135,14 @@ export interface AliceRingTokenInterface extends Interface {
     functionFragment: "sendRequest",
     values: [
       string,
+      BigNumberish,
       BytesLike,
-      BigNumberish,
-      BigNumberish,
       string[],
       BytesLike[],
       BigNumberish,
       BigNumberish,
       BytesLike
     ]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "sendRequestCBOR",
-    values: [BytesLike, BigNumberish, BigNumberish, BytesLike]
   ): string;
   encodeFunctionData(
     functionFragment: "setApprovalForAll",
@@ -219,10 +213,6 @@ export interface AliceRingTokenInterface extends Interface {
   ): Result;
   decodeFunctionResult(
     functionFragment: "sendRequest",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "sendRequestCBOR",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -505,27 +495,15 @@ export interface AliceRingToken extends BaseContract {
   sendRequest: TypedContractMethod<
     [
       source: string,
-      encryptedSecretsUrls: BytesLike,
-      donHostedSecretsSlotID: BigNumberish,
-      donHostedSecretsVersion: BigNumberish,
+      secretsLocation: BigNumberish,
+      encryptedSecretsReference: BytesLike,
       args: string[],
       bytesArgs: BytesLike[],
       subscriptionId: BigNumberish,
-      gasLimit: BigNumberish,
-      donID: BytesLike
+      callbackGasLimit: BigNumberish,
+      donId: BytesLike
     ],
-    [string],
-    "nonpayable"
-  >;
-
-  sendRequestCBOR: TypedContractMethod<
-    [
-      request: BytesLike,
-      subscriptionId: BigNumberish,
-      gasLimit: BigNumberish,
-      donID: BytesLike
-    ],
-    [string],
+    [void],
     "nonpayable"
   >;
 
@@ -657,28 +635,15 @@ export interface AliceRingToken extends BaseContract {
   ): TypedContractMethod<
     [
       source: string,
-      encryptedSecretsUrls: BytesLike,
-      donHostedSecretsSlotID: BigNumberish,
-      donHostedSecretsVersion: BigNumberish,
+      secretsLocation: BigNumberish,
+      encryptedSecretsReference: BytesLike,
       args: string[],
       bytesArgs: BytesLike[],
       subscriptionId: BigNumberish,
-      gasLimit: BigNumberish,
-      donID: BytesLike
+      callbackGasLimit: BigNumberish,
+      donId: BytesLike
     ],
-    [string],
-    "nonpayable"
-  >;
-  getFunction(
-    nameOrSignature: "sendRequestCBOR"
-  ): TypedContractMethod<
-    [
-      request: BytesLike,
-      subscriptionId: BigNumberish,
-      gasLimit: BigNumberish,
-      donID: BytesLike
-    ],
-    [string],
+    [void],
     "nonpayable"
   >;
   getFunction(
